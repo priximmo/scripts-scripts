@@ -27,11 +27,21 @@ def main (argc, argv):
 	if argc < 4:
 		raise RuntimeError
 	
+	# automate for CHRT script-kit
+	if "auto" in argv[2]:
+		arg2 = os.environ["CHRT_CHROOT_PREFIX"]
+		if len(arg2) > 0 and not "auto" in arg2:
+			where_to = arg2
+		else:
+			raise RuntimeError
+	else:
+		where_to = argv[2]
+	
 	###
 	# *.py <needed binary> <CHROOT> <path to library files
 	###
 	what = argv[1]
-	where_to = argv[2]
+	##  where_to = argv[2]
 	CHROOT_PREFIX = where_to
 	where_from = argv[3]
 	LD_LIBRARY_LOC = where_from
