@@ -2,7 +2,13 @@
 # coding=utf-8
 import sys
 
+class DecodeInstead(Exception):
+	pass
+
 class NBName(object):
+	def __init__(self, *args, **kwargs):
+		self.__init__('','')
+
 	def __init__(self, name, scope=''):
 		self._mapping = {
 			'A': 'EB',
@@ -48,17 +54,50 @@ class NBName(object):
 		self._name_e = ''
 		self._name_u = name
 		self._scope = scope
+	
+	def decode(self, instr):
+		outstr = ''
+		for i in range(0, len(instr)):
+			c = ''
+			try:
+				c = instr[i]
+				c = c + instr[i+1]  
+			except IndexError:
+				break
+			print(c)
+			for k, v in self._mapping.items():
+				if v == c:
+					outstr = outstr + str(k) 
+		return outstr
+
 	@property
 	def unencoded(self):
+		uen = self.decode(self._name_e)
+		
+		if len(uen) > 0 and self._name_u is not uen:
+			self._name_u = uen
+
 		return self._name_u
+
+	@unencoded.setter
+	def unencoded(self, val):
+		self._name_u = val
+		return
 
 	@property
 	def encoded(self):
-		if len(self._name_e) > 0:
+		if len(self._name_e) > 0 and self.decode(self._name_e) is self._name_u:
 			return self._name_e
+
 		r = [c for c in self.unencoded.upper()]
-		r = [self._mapping[c] for c in r] 
-		return ''.join(r)
+		r = [self._mapping[c] for c in r]
+		self._name_e = ''.join(r)
+		return self._name_e
+
+	@encoded.setter
+	def encoded(self, val):
+		self._name_e = val
+		return
 
 	@property
 	def scope(self):
@@ -73,17 +112,33 @@ class NBName(object):
 
 if len(sys.argv) < 2:
 	print("usage {0}: nbname.nbscope\n".format(sys.argv[0]))
+	print("usage {0}: -d nbname\n".format(sys.argv[0]))
 	sys.exit(1)
 
-if '.' in sys.argv[1]:
-	p = sys.argv[1].find('.')
-	nns = sys.argv[1][1+p:]
-	nnn = sys.argv[1][:p]
-else:
-	nnn = sys.argv[1]
-	nns = ''
+try:
+	if "-d" in sys.argv:
+		raise DecodeInstead
 
-nn = NBName(nnn, nns)
-print(nn.full)
+	if '.' in sys.argv[1]:
+		p = sys.argv[1].find('.')
+		nns = sys.argv[1][1+p:]
+		nnn = sys.argv[1][:p]
+	else:
+		nnn = sys.argv[1]
+		nns = ''
+
+	nn = NBName(nnn, nns)
+	print(nn.full)
+
+except DecodeInstead:
+	if len(sys.argv) <= 2:
+		print("usage {0}: nbname.nbscope\n".format(sys.argv[0]))
+		print("usage {0}: -d nbname\n".format(sys.argv[0]))
+		sys.exit(1)
+
+	nn = NBName('')
+	nn.encoded = sys.argv[2]
+	print(nn.unencoded)
+#
+ #
 sys.exit(0)
-
