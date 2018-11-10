@@ -4,6 +4,7 @@
 
 * <u>__chrt.sh__</u> - chroot jail creation aide
 * <u>__empack.py__</u> - build tool to generate yasm/nasm source files from any file, supports compression. decompression is up to you
+* <u>__gdfm.sh__</u> - quickly see the diff of a git branch vs the current
 * <u>__nbname.py__</u> - CLI-invoke NetBIOS Name encoder tool
 * <u>__playlist.py__</u> - creates playlists for collections sorted by *gid*
 * <u>__ranhex.sh__</u> - shell script that's essentially a clone of *mkstemp()*
