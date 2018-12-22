@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ ! -e /var/local/rooms.txt ]; then
+	touch /var/local/rooms.txt
+	chmod a+rw /var/local/rooms.txt
+fi
+
+roomfind.py /var/local/_rooms.txt 3 >/dev/null 2>&1
+cat /var/local/_rooms.txt >> /var/local/rooms.txt
+echo -e "\x20" > /var/local/_rooms.txt
+php /var/local/prettify.php > /var/local/rooms.html
+
